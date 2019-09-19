@@ -2,100 +2,314 @@ syntax = "proto2";
 
 package fusion;
 
-enum Phase { 
-    MSG_1A = 1;
-    MSG_1B = 2;
-    MSG_2 = 3;
-    MSG_3 = 4;
-    MSG_4 = 5;
-    MSG_5 = 6;
-    MSG_6 = 7;
-    MSG_7 = 8;
+enum Message_Type { 
+    MSG_1 = 1; 
+    MSG_2 = 2;
+    MSG_3 = 3;
+    MSG_4 = 4;
+    MSG_5 = 5;
+    MSG_6 = 6;
+    MSG_7A = 7;
+    MSG_7B = 8;
     MSG_8A = 9;
     MSG_8B = 10;
     MSG_9A = 11;
     MSG_9B = 12;
+    MSG_10A = 13;
+    MSG_10B = 14;
 
     }
 
  
 message Packet {
-    required Phase phase = 1;
-    required Pool_session pool_session = 2;
-    required Message message = 3;
+    required Message_Type message_type = 1;   
+    required Message message = 2;
     }
 
 message Message {
-    optional Scale scale =1;
-    repeated Output_address output_address =2;
-    repeated Commitment_payload commitment_payload =3;
-    optional Signed_input signed_input = 4;
-    repeated Salt_commitment salt_commitment = 5;
-    repeated Identity_Key identity_key = 6;
-    repeated Encrypted_Proof encrypted_proof =7 ;
-    repeated Identity_Signature identity_signature = 8;
-    repeated Salted_Hash salted_hash = 9;
-    optional Player_order player_order = 10;
-    optional Private_Key private_key= 11;
+    optional Tier tier =1;
+    optional Blind_Signature_Setup blind_signature_setup = 2;
+    optional Player_Commitments player_commitments = 3;
+    optional Sharing_Blind_Signatures sharing_blind_signatures = 4;
+    optional Covert_Announcement_Of_Inputs_And_Outputs covert_announcement_of_inputs_and_outputs = 5;
+    optional Sharing_Components_And_Commitments sharing_components_and_commitments = 6;
+    optional Covert_Announcement_Of_Signatures covert_announcement_of_signatures = 7; 
+    optional Send_Random_Number send_random_number = 8;
+    optional Sharing_Signatures sharing_signatures = 9;
+    optional Assigning_Verifiers assigning_verifiers = 10;
+    optional Send_Proofs send_proofs = 11;
+    optional Share_Proofs share_proofs = 12;
+    optional Invoke_Blame invoke_blame = 13;
+    optional Assign_Blame assign_blame = 14;
 }
  
 
-message Commitment_payload {
-    required Identity_Key identity_key =1;
-    repeated Salted_hash salted_hash = 2;
-    repeated Communication_key communication_key =3;
-    required Identity_Signature identity_signature = 4;
+
+message Pool_Session {
+    required bytes pool_session = 1;
     }
 
-message Encrypted_proof {
-    required bytes encrypted_proof = 1;
+//Phase 1 - Message 1 ------------------------------------------------------  
+message Tier {
+    required bytes tier = 1;
+    } 
+
+//Phase 2 ------------------------------------------------------------------
+message Blind_Signatures_Public_Key {
+    required bytes blind_signatures_public_key_ = 1;
     }
 
-message Player_order {
-    repeated Identity_key identity_key = 1;
+//Phase 2
+message Nonce_Points {
+    repeated bytes nonce_points = 1;
     }
 
-message Communication_key {
-    required string communication_key = 1;
+//Phase 2 - Message 2
+message Blind_Signature_Setup {
+    required Blind_Signatures_Public_Key blind_signatures_public_key = 1;
+    required Nonce_Points nonce_points = 2;
     }
 
-message Identity_key {
-    required string identity_key = 1;
-}
+//Phase 3 ------------------------------------------------------------------
+message Salted_Hash_Of_Component {
+   required bytes salted_hash_of_component = 1;
+    }
 
-message Salted_hash {
-    required bytes salted_hash = 1;
-}
+//Phase 3
+message Communication_Key {
+    required bytes communication_key = 1;
+    }
 
-message Identity_signature {
-    required bytes identity_signature = 1;
-}
+//Phase 3
+message Amount_Commitment {
+    required bytes amount_commitment = 1;
+    }
 
-message Signed_Input {
-    required bytes signed_input = 1;
-}
+//Phase 3
+message Commitment_Payload {
+    required Salted_Hash_Of_Component salted_hash_of_component = 1;
+    required Communication_Key communication_key = 2;
+    required Amount_Commitment amount_commmitment = 3;
+    }
 
+//Phase 3
+message Blind_Signature_Request {
+    required bytes blind_signature_request = 1;
+    }
+
+//Phase 3
+message Random_Number_Commitment {
+    required bytes random_number_commitment = 1;
+    }
+
+//Phase 3
+message Combined_Pedersen_Secret_Value {
+    required bytes combined_pedersen_secret_value = 1;
+    }
+
+//Phase 3 - Message 3
+message Player_Commitments {
+    repeated Commitment_Payload commitment_payload =1;
+    repeated Blind_Signature_Request blind_signature_request = 2;
+    required Random_Number_Commitment random_number_commitment = 3;
+    required Combined_Pedersen_Secret_Value combined_pedersen_secret_value =4;
+    }
+
+
+//Phase 4 ------------------------------------------------------------------ 
+message Blind_Signature {
+    required bytes blind_signature = 1;
+    }
+
+//Phase 4 - Message 4
+message Sharing_Blind_Signatures {
+    repeated Blind_Signature blind_signature = 1;
+    }
+
+//Phase 5 ------------------------------------------------------------------ 
+message Server_Key {
+    required bytes server_key = 1;
+    }
+
+
+//Phase 5
+message Transaction_Component_Input {
+    required string Prev_Txid = 1;
+    required string Prev_Index = 2;        
+
+    }
+
+//Phase 5
+message Transaction_Component_Output {
+    required string PubkeyHash = 1;
+    required int64 Amount_Satoshis = 2;        
+
+    }
+
+//Phase 5
+message Transaction_Component_Blank {
+    required bytes Random_Number = 1;       
+    }
+
+// Phase 5
+message Transaction_Component {
+
+    enum Component_Type {
+        OUTPUT = 0;
+        INPUT= 1;
+        BLANK = 2;
+        }
+
+    optional Transaction_Component_Output transaction_component_output = 1;
+    optional Transaction_Component_Input transaction_component_input = 2;
+    optional Transaction_Component_Blank transaction_component_blank = 3;
+
+    }
+
+//Phase 5 
+message Unblinded_Signature {
+    required bytes unblinded_signature = 1;
+    }
+
+//Phase 5
 message Salt_Commitment {
     required bytes salt_commitment = 1;
     }
 
-message Secret_salt {
-    required bytes secret_salt = 1;
+//Phase 5 - Message 5
+message Covert_Announcement_Of_Inputs_And_Outputs {
+    required Server_Key server_key=1;
+    required Transaction_Component transaction_component = 2;
+    required Unblinded_Signature unblinded_signature = 3;
+    required Salt_Commitment salt_Commitment = 4;
     }
 
+
+//Phase 6 ------------------------------------------------------------------ 
+message Component_And_Salt_Commitment {
+    required Transaction_Component transaction_component = 1;
+    required Salt_Commitment salt_commitment = 2;
+    }
+
+//Phase 6 - Message 6
+message Sharing_Components_And_Commitments {
+    repeated Component_And_Salt_Commitment component_and_salt_commitment = 1;
+    repeated Commitment_Payload commitment_payload = 2;
+    }
+
+//Phase 7 ------------------------------------------------------------------  
+message Pubkey {
+    required bytes pubkey = 1;
+    }
+
+//Phase 7
+message Transaction_Signature {
+    required bytes transaction_signature = 1;
+    }
+
+//Phase 7 
+message Component_Index {
+    required bytes component_index = 1;
+    }
+
+//Phase 7 - Message 7A
+message Covert_Announcement_Of_Signatures {
+    required Server_Key server_key = 1;
+    required Pubkey pubkey = 2;
+    required Transaction_Signature transaction_signature = 3;
+    required Component_Index component_index = 4;
+    }
+
+//Phase 7 - Message 7B  
+message Send_Random_Number {
+    required bytes random_number
+    }
+
+//Phase 8 ------------------------------------------------------------------  
+message Commitment_To_Verify {
+    required bytes commitment_to_verify = 1;
+    }
+
+//Phase 8
+message Verifying_Commitment {
+    required bytes verifying_commitment = 1;
+    }
+
+//Phase 8
+message Verification_Pairs {
+    required Commitment_To_Verify commitment_to_verify = 1;
+    required Verifying_Commitment verifiying_commitment = 2;
+    }
+
+//Phase 8 - Message 8A
+message Sharing_Signatures {
+    repeated Transaction_Signature transaction_signature = 1;
+    }
+
+//Phase 8 - Message 8B
+message Assigning_Verifiers {
+    repeated Verification_Pairs verification_pairs = 1;
+    }
+
+
+//Phase 9 ------------------------------------------------------------------  
+message Encrypted_Proof {
+    required bytes encrypted_proof = 1;
+    }
+
+//Phase 9
+ message Commitment_And_Proof {
+    required Commitment_Payload commitment_payload = 1;
+    required Encrypted_Proof encrypted_proof = 2;
+    }
+
+//Phase 9 - Message 9A
+message Send_Proofs {
+   repeated Encrypted_Proof encrypted_proof = 1;
+   }
+
+//Phase 9 -Message 9B
+message Share_Proofs {
+    repeated Commitment_And_Proof commitment_and_proof = 1;
+    }
+
+//Phase 10 ------------------------------------------------------------------  
+message Faulty_Commitment {
+    required bytes faulty_commitment =1 ;
+    }
+
+//Phase 10
+message Commitment_Of_Blamer {
+    required bytes commitment_of_blamer = 1;
+    }
+
+//Phase 10
+message Blame_Reason{
+    required bytes blame_reason = 1;
+    }
+
+//Phase 10
 message Private_Key {
     required bytes private_key = 1;
-}
-
-message Pool_session {
-    required bytes pool_session = 1;
+    // This is a communication private key.  Never send bitcoin private keys!
     }
 
-message Scale {
-    required int64 satsohis =1;
+//Phase 10 - Message 10A
+message Invoke_Blame {
+    required Faulty_Commitment faulty_commitment = 1;
+    required Commitment_Of_Blamer commitment_of_blamer = 2;
+    required Blame_Reason blame_reason = 3;
+    required Private_Key private_key = 4;
     }
 
-message Output_address {
-    required string output_address = 1;
+//Phase 10 - Message 10B
+message Assign_Blame {
+    required Faulty_Commitment faulty_commitment = 1;
+    required Blame_Reason blame_reason = 2;
     }
+
+
+    
+
+ 
  
