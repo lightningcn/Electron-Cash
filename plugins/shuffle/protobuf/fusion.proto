@@ -222,7 +222,7 @@ message Covert_Announcement_Of_Signatures {
 
 //Phase 7 - Message 7B  
 message Send_Random_Number {
-    required bytes random_number
+    required bytes random_number = 1;
     }
 
 //Phase 8 ------------------------------------------------------------------  
