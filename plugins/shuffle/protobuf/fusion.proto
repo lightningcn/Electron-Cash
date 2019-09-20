@@ -1,54 +1,27 @@
 syntax = "proto2";
 
 package fusion;
-
-enum Message_Type { 
-    MSG_1 = 1; 
-    MSG_2 = 2;
-    MSG_3 = 3;
-    MSG_4 = 4;
-    MSG_5 = 5;
-    MSG_6 = 6;
-    MSG_7A = 7;
-    MSG_7B = 8;
-    MSG_8A = 9;
-    MSG_8B = 10;
-    MSG_9A = 11;
-    MSG_9B = 12;
-    MSG_10A = 13;
-    MSG_10B = 14;
-
-    }
-
  
-message Packet {
-    required Message_Type message_type = 1;   
-    required Message message = 2;
-    }
 
 message Message {
-    optional Tier tier =1;
-    optional Blind_Signature_Setup blind_signature_setup = 2;
-    optional Player_Commitments player_commitments = 3;
-    optional Sharing_Blind_Signatures sharing_blind_signatures = 4;
-    optional Covert_Announcement_Of_Inputs_And_Outputs covert_announcement_of_inputs_and_outputs = 5;
-    optional Sharing_Components_And_Commitments sharing_components_and_commitments = 6;
-    optional Covert_Announcement_Of_Signatures covert_announcement_of_signatures = 7; 
-    optional Send_Random_Number send_random_number = 8;
-    optional Sharing_Signatures sharing_signatures = 9;
-    optional Assigning_Verifiers assigning_verifiers = 10;
-    optional Send_Proofs send_proofs = 11;
-    optional Share_Proofs share_proofs = 12;
-    optional Invoke_Blame invoke_blame = 13;
-    optional Assign_Blame assign_blame = 14;
-}
- 
-
-
-message Pool_Session {
-    required bytes pool_session = 1;
+    oneof Phases {
+        Tier tier =1;
+        Blind_Signature_Setup blind_signature_setup = 2;
+        Player_Commitments player_commitments = 3;
+        Sharing_Blind_Signatures sharing_blind_signatures = 4;
+        Covert_Announcement_Of_Inputs_And_Outputs covert_announcement_of_inputs_and_outputs = 5;
+        Sharing_Components_And_Commitments sharing_components_and_commitments = 6;
+        Covert_Announcement_Of_Signatures covert_announcement_of_signatures = 7; 
+        Send_Random_Number send_random_number = 8;
+        Sharing_Signatures sharing_signatures = 9;
+        Assigning_Verifiers assigning_verifiers = 10;
+        Send_Proofs send_proofs = 11;
+        Share_Proofs share_proofs = 12;
+        Invoke_Blame invoke_blame = 13;
+        Assign_Blame assign_blame = 14;
+        }
     }
-
+ 
 //Phase 1 - Message 1 ------------------------------------------------------  
 message Tier {
     required bytes tier = 1;
