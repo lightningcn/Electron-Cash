@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  # publish jobs require $DOCKERHUB_REPO, $DOCKERHUB_USER, $DOCKERHUB_PASS defined
+  publish_docker_linuxamd64:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          command: |
+            LATEST_COMMIT=${CIRCLE_SHA1}
+            sudo docker build --pull -t $DOCKERHUB_REPO:$LATEST_COMMIT -f android/Dockerfile .
+            sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
+            sudo docker push $DOCKERHUB_REPO:$LATEST_COMMIT
+
+workflows:
+  version: 2
+  publish:
+    jobs:
+      - publish_docker_linuxamd64:
+          filters:
+            # ignore any commit on any branch by default
+            # only act on version tags
+            tags:
+              only: /-.+/
